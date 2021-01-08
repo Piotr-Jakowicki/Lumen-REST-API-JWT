@@ -10,12 +10,17 @@ use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:api', ['except' => ['login', 'register']]);
+    }
+
     public function register(Request $request)
     {
         $rules = [
-            'name' => 'required',
-            'email' => 'required|unique:users',
-            'password' => 'required|min:6|max:20'
+            'name' => 'required|string',
+            'email' => 'required|unique:users|email',
+            'password' => 'required|min:6|confirmed'
         ];
 
         $validated = $this->validate($request, $rules);
@@ -27,19 +32,37 @@ class AuthController extends Controller
         return $this->respondWithToken($token);
     }
 
-    public function login(Request $request){
+    public function login(Request $request)
+    {
         $rules = [
-            'email' => 'required',
-            'password' => 'required'
+            'email' => 'required|email',
+            'password' => 'required|string|min:6'
         ];
 
         $validated = $this->validate($request, $rules);
 
-        if(!$token = Auth::attempt($validated)){
+        if (!$token = Auth::attempt($validated)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
 
         return $this->respondWithToken($token);
+    }
+
+    public function me()
+    {
+        return response()->json(Auth::user());
+    }
+
+    public function logout()
+    {
+        Auth::logout();
+
+        return response()->json(['message' => 'Successfully logged out']);
+    }
+
+    public function refresh()
+    {
+        return $this->respondWithToken(Auth::refresh());
     }
 
     protected function respondWithToken($token)

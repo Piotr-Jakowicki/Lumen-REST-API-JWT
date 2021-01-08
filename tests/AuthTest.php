@@ -4,6 +4,8 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\DatabaseTransactions;
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Illuminate\Support\Facades\Auth;
 
 class AuthTest extends TestCase
 {
@@ -14,7 +16,7 @@ class AuthTest extends TestCase
      */
     public function user_can_register()
     {
-        $response = $this->post('/api/register', $this->data());
+        $response = $this->post('/api/register', array_merge($this->data(), ['password_confirmation' => 'password']));
 
         $this->assertEquals(200, $this->response->status());
         $this->seeJsonStructure([
@@ -37,7 +39,7 @@ class AuthTest extends TestCase
             'name' => '',
             'email' => '',
             'password' => ''
-            ]));
+        ]));
 
         $this->assertEquals(422, $this->response->status());
         $this->seeJsonStructure([
@@ -107,11 +109,68 @@ class AuthTest extends TestCase
         ]);
     }
 
-    private function data(){
+    /**
+     * @test
+     */
+    public function should_return_user_data()
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user, 'api')
+            ->get('/api/me');
+
+        $this->assertEquals(200, $this->response->status());
+        $this->seeJson([
+            'id' => $user->id,
+            'email' => $user->email,
+            'name' => $user->name,
+        ]);
+    }
+
+    // TODO not autenticated user /api/me
+
+    /**
+     * @test
+     */
+    public function user_can_logout()
+    {
+        $user = User::factory()->create();
+        Auth::login($user);
+
+        $this->post('/api/logout');
+
+        $this->assertEquals(200, $this->response->status());
+        $this->seeJson(['message' => 'Successfully logged out']);
+
+        $this->get('/api/me');
+
+        $this->assertEquals(401, $this->response->status());
+    }
+
+    /**
+     * @test
+     */
+    public function user_can_refresh_token()
+    {
+        $user = User::factory()->create();
+        Auth::login($user);
+
+        $this->get('/api/refresh');
+
+        $this->assertEquals(200, $this->response->status());
+        $this->seeJsonStructure([
+            'access_token',
+            'token_type',
+            'expires_in'
+        ]);
+    }
+
+    private function data()
+    {
         return [
             'name' => 'Piotr',
             'email' => 'test@test.com',
-            'password' => 'password'
+            'password' => 'password',
         ];
     }
 }
