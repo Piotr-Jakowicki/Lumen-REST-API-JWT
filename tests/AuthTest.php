@@ -49,8 +49,37 @@ class AuthTest extends TestCase
         ]);
     }
 
-    // TODO only unauthenticated user can register
-    // TODO only unauthenticated user can login
+    /**
+     * @test
+     */
+    public function user_cant_register_new_account_while_is_logged_in()
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user, 'api')
+            ->post('/api/register');
+
+        $this->assertEquals(403, $this->response->status());
+        $this->seeJson([
+            'error' => 'User already logged in.'
+        ]);
+    }
+
+    /**
+     * @test
+     */
+    public function authorized_user_cant_login_twice()
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user, 'api')
+            ->post('/api/login');
+
+        $this->assertEquals(403, $this->response->status());
+        $this->seeJson([
+            'error' => 'User already logged in.'
+        ]);
+    }
 
     /**
      * @test
