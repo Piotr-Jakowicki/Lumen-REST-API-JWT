@@ -137,4 +137,143 @@ class CategoriesTest extends TestCase
             'error' => 'Category not found!'
         ]);
     }
+
+    /**
+     * @test
+     */
+    public function should_delete_category()
+    {
+        $category = Category::factory()->create();
+
+        $this->delete("/api/categories/$category->id");
+
+        $this->assertEquals(200, $this->response->status());
+        $this->seeJsonStructure([
+            'data' => [
+                'id',
+                'parent_id',
+                'name'
+            ]
+        ]);
+        $this->seeJson([
+            'data' => [
+                'id' => $category->id,
+                'parent_id' => $category->parent_id,
+                'name' => $category->name
+            ]
+        ]);
+        $this->notSeeInDatabase('categories', ['name' => $category->name]);
+    }
+
+    /**
+     * @test
+     */
+    public function should_create_category()
+    {
+        $this->post('/api/categories', [
+            'name' => 'Category'
+        ]);
+
+        $this->assertEquals(201, $this->response->status());
+        $this->seeJson([
+            'data' => [
+                'id' => 1,
+                'parent_id' => null,
+                'name' => 'Category'
+            ]
+        ]);
+        $this->seeInDatabase('categories', ['name' => 'Category']);
+    }
+
+    /**
+     * @test
+     */
+    public function should_create_category_with_parent()
+    {
+        $category = Category::factory()->create();
+
+        $this->post('/api/categories', [
+            'name' => 'Category',
+            'parent_id' => $category->id
+        ]);
+
+        $this->assertEquals(201, $this->response->status());
+        $this->seeJson([
+            'data' => [
+                'id' => 2,
+                'parent_id' => $category->id,
+                'name' => 'Category'
+            ]
+        ]);
+        $this->seeInDatabase('categories', ['name' => 'Category']);
+    }
+
+    /**
+     * @test
+     */
+    public function name_is_required_in_store_category()
+    {
+        $this->post('/api/categories', [
+            'name' => ''
+        ]);
+
+        $this->assertEquals(422, $this->response->status());
+        $this->seeJsonStructure([
+            'name'
+        ]);
+        $this->notSeeInDatabase('categories', ['name' => '']);
+    }
+
+    /**
+     * @test
+     */
+    public function category_myst_be_unique()
+    {
+        Category::factory()->create(['name' => 'unique']);
+
+        $this->post('/api/categories', [
+            'name' => 'unique'
+        ]);
+
+        $this->assertEquals(422, $this->response->status());
+        $this->seeJsonStructure([
+            'name'
+        ]);
+    }
+
+    /**
+     * @test
+     */
+    public function should_update_category()
+    {
+        $category = Category::factory()->create();
+
+        $this->patch("/api/categories/$category->id", [
+            'name' => "$category->name-updated"
+        ]);
+
+        $this->assertEquals(200, $this->response->status());
+        $this->seeJson([
+            'id' => $category->id,
+            'name' => "$category->name-updated",
+            'parent_id' => $category->parent_id
+        ]);
+    }
+
+    /**
+     * @test
+     */
+    public function return_error_if_category_with_specified_parent_id_does_not_exists()
+    {
+        $category = Category::factory()->create();
+
+        $this->patch("/api/categories/$category->id", [
+            'parent_id' => -1
+        ]);
+
+        $this->assertEquals(422, $this->response->status());
+        $this->seeJsonStructure([
+            'parent_id'
+        ]);
+    }
 }
