@@ -16,4 +16,13 @@ class CategoryController extends Controller
 
         return new CategoryCollection($categories);
     }
+
+    public function show($id)
+    {
+        $category = Category::find($id);
+
+        if (empty($category)) return response()->json(['error' => 'Category not found!'], 404);
+
+        return new CategoryResource($category);
+    }
 }

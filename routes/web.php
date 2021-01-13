@@ -30,4 +30,5 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
     // Categories
     $router->get('/categories', 'Api\CategoryController@index');
+    $router->get('/categories/{id}', 'Api\CategoryController@show');
 });

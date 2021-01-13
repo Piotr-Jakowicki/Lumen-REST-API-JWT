@@ -66,8 +66,6 @@ class CategoriesTest extends TestCase
         $this->assertEquals(200, $this->response->status());
         $response = (json_decode($this->response->getContent())->data);
 
-        $order = [];
-
         foreach ($response as $row) {
             $order[] = $row->name;
         }
@@ -89,12 +87,54 @@ class CategoriesTest extends TestCase
         $this->assertEquals(200, $this->response->status());
         $response = (json_decode($this->response->getContent())->data);
 
-        $order = [];
-
         foreach ($response as $row) {
             $order[] = $row->name;
         }
 
         $this->assertEquals(['c', 'b', 'a'], $order);
+    }
+
+    /**
+     * @test
+     */
+    public function should_return_specified_category()
+    {
+        $category = Category::factory()->create();
+
+        $this->get("/api/categories/$category->id");
+
+        $this->assertEquals(200, $this->response->status());
+        $this->seeJsonStructure([
+            'data' => [
+                'id',
+                'parent_id',
+                'name'
+            ]
+        ]);
+        $this->seeJson([
+            'data' => [
+                'id' => $category->id,
+                'parent_id' => $category->parent_id,
+                'name' => $category->name
+            ]
+        ]);
+    }
+
+    /**
+     * @test
+     */
+    public function should_return_error_if_category_does_not_exist()
+    {
+        $category = Category::factory()->create();
+
+        $this->get('/api/categories/-1');
+
+        $this->assertEquals(404, $this->response->status());
+        $this->seeJsonStructure([
+            'error'
+        ]);
+        $this->seeJson([
+            'error' => 'Category not found!'
+        ]);
     }
 }
