@@ -51,4 +51,50 @@ class CategoriesTest extends TestCase
         ]);
         $this->assertEquals(2, count(json_decode($this->response->getContent())->data));
     }
+
+    /**
+     * @test
+     */
+    public function list_can_be_sorted_asc_by_name()
+    {
+        Category::factory()->create(['name' => 'c']);
+        Category::factory()->create(['name' => 'b']);
+        Category::factory()->create(['name' => 'a']);
+
+        $this->get('/api/categories?asc');
+
+        $this->assertEquals(200, $this->response->status());
+        $response = (json_decode($this->response->getContent())->data);
+
+        $order = [];
+
+        foreach ($response as $row) {
+            $order[] = $row->name;
+        }
+
+        $this->assertEquals(['a', 'b', 'c'], $order);
+    }
+
+    /**
+     * @test
+     */
+    public function list_can_be_sorted_desc_by_name()
+    {
+        Category::factory()->create(['name' => 'a']);
+        Category::factory()->create(['name' => 'b']);
+        Category::factory()->create(['name' => 'c']);
+
+        $this->get('/api/categories?desc');
+
+        $this->assertEquals(200, $this->response->status());
+        $response = (json_decode($this->response->getContent())->data);
+
+        $order = [];
+
+        foreach ($response as $row) {
+            $order[] = $row->name;
+        }
+
+        $this->assertEquals(['c', 'b', 'a'], $order);
+    }
 }
