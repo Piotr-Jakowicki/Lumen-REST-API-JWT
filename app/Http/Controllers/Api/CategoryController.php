@@ -12,25 +12,22 @@ class CategoryController extends Controller
 {
     public function index(Request $request)
     {
-        $categories = Category::filterBy($request->all())->paginate($request->limit ?? 10);
+        $categories = Category::filterBy($request->all())
+            ->paginate($request->limit ?? 10);
 
         return new CategoryCollection($categories);
     }
 
     public function show($id)
     {
-        $category = Category::find($id);
-
-        if (empty($category)) return response()->json(['error' => 'Category not found!'], 404);
+        $category = Category::findOrFail($id);
 
         return new CategoryResource($category);
     }
 
     public function destroy($id)
     {
-        $category = Category::find($id);
-
-        if (empty($category)) return response()->json(['error' => 'Category not found!'], 404);
+        $category = Category::findOrFail($id);
 
         $category->delete();
 
@@ -53,9 +50,7 @@ class CategoryController extends Controller
 
     public function update(Request $request, $id)
     {
-        $category = Category::find($id);
-
-        if (empty($category)) return response()->json(['error' => 'Category not found!'], 404);
+        $category = Category::findOrFail($id);
 
         $rules = [
             'name' => 'sometimes|required|string|unique:categories',

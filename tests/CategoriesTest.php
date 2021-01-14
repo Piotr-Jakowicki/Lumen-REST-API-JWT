@@ -123,7 +123,7 @@ class CategoriesTest extends TestCase
     /**
      * @test
      */
-    public function should_return_error_if_category_does_not_exist()
+    public function should_return_error_if_category_does_not_exist_in_show_method()
     {
         $category = Category::factory()->create();
 
@@ -274,6 +274,21 @@ class CategoriesTest extends TestCase
         $this->assertEquals(422, $this->response->status());
         $this->seeJsonStructure([
             'parent_id'
+        ]);
+    }
+
+    /**
+     * @test
+     */
+    public function return_error_if_category_model_does_not_exists_in_update_method()
+    {
+        $this->patch('/api/categories/-1', [
+            'parent_id' => -1
+        ]);
+
+        $this->assertEquals(404, $this->response->status());
+        $this->seeJson([
+            'error' => 'Category not found!'
         ]);
     }
 }
