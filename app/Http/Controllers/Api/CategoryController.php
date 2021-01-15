@@ -6,16 +6,31 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\CategoryCollection;
 use App\Models\Category;
 use App\Http\Resources\CategoryResource;
+use App\Repositories\Categories\CategoriesRepositoryInterface;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Redis;
 
 class CategoryController extends Controller
 {
+    private $repository;
+
+    public function __construct(CategoriesRepositoryInterface $repository)
+    {
+        $this->repository = $repository;
+    }
+
     public function index(Request $request)
     {
-        $categories = Category::filterBy($request->all())
-            ->paginate($request->limit ?? 10);
+        $categories = $this->repository->get($request->all());
 
-        return new CategoryCollection($categories);
+        return response()->json($categories);
+        //return new CategoryResource($categories);
+
+        // $categories = Category::filterBy($request->all())
+        //     ->paginate($request->limit ?? 10);
+
+        // return new CategoryCollection($categories);
     }
 
     public function show($id)

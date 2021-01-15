@@ -20,5 +20,5 @@ return [
             'driver' => 'eloquent',
             'model' => User::class,
         ]
-    ]
+    ],
 ];

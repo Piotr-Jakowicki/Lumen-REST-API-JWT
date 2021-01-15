@@ -1,5 +1,8 @@
 <?php
 
+use App\Repositories\Categories\CategoriesCacheRepository;
+use App\Repositories\Categories\CategoriesRepositoryInterface;
+
 require_once __DIR__ . '/../vendor/autoload.php';
 
 (new Laravel\Lumen\Bootstrap\LoadEnvironmentVariables(
@@ -95,6 +98,8 @@ $app->routeMiddleware([
 // $app->register(App\Providers\AppServiceProvider::class);
 $app->register(App\Providers\AuthServiceProvider::class);
 $app->register(Tymon\JWTAuth\Providers\LumenServiceProvider::class);
+$app->register(Illuminate\Redis\RedisServiceProvider::class);
+$app->register(\Illuminate\Cache\CacheServiceProvider::class);
 // $app->register(App\Providers\EventServiceProvider::class);
 
 /*
@@ -107,6 +112,20 @@ $app->register(Tymon\JWTAuth\Providers\LumenServiceProvider::class);
 | can respond to, as well as the controllers that may handle them.
 |
 */
+
+/**
+ * Interface Binding To Implementation
+ * 
+ */
+
+$app->bind(CategoriesRepositoryInterface::class, CategoriesCacheRepository::class);
+
+/**
+ * Aliases
+ * 
+ */
+
+$app->alias('cache', Illuminate\Cache\CacheManager::class);
 
 $app->router->group([
     'namespace' => 'App\Http\Controllers',
