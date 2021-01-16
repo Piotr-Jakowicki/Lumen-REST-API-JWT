@@ -9,6 +9,7 @@ use App\Http\Resources\CategoryResource;
 use App\Repositories\Categories\CategoriesRepositoryInterface;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Redis;
 
 class CategoryController extends Controller
@@ -24,13 +25,7 @@ class CategoryController extends Controller
     {
         $categories = $this->repository->get($request->all());
 
-        return response()->json($categories);
-        //return new CategoryResource($categories);
-
-        // $categories = Category::filterBy($request->all())
-        //     ->paginate($request->limit ?? 10);
-
-        // return new CategoryCollection($categories);
+        return new CategoryCollection($categories);
     }
 
     public function show($id)

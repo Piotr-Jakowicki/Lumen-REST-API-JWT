@@ -2,46 +2,32 @@
 
 namespace App\Repositories\Categories;
 
-use Illuminate\Cache\CacheManager;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Redis;
 
 class CategoriesCacheRepository extends CacheBase implements CategoriesRepositoryInterface
 {
     protected $repository;
-    protected $cache;
 
-    const TTL = 1444; #
+    const TTL = 1800;
 
-    public function __construct(CacheManager $cache, CategoriesRepository $repository)
+    public function __construct(CategoriesRepository $repository)
     {
-        $this->cache = $cache;
         $this->repository = $repository;
     }
 
     public function get($params)
     {
-        if (!Redis::get($key = "categories" . $this->prepareCacheKey($params))) {
-            Redis::set($key, json_encode($result = $this->repository->get($params)));
+        $key = "categories_" . $this->prepareCacheKey($params);
 
-            return $result;
-        } else {
-            return json_decode(Redis::get($key));
-        }
+        return Cache::remember($key, 1800, function () use ($params) {
+            return $this->repository->get($params);
+        });
     }
 
     public function find(int $id)
     {
-        if (!Redis::get($key = "categories.$id")) {
-            Redis::set($key, json_encode($result = $this->repository->find($id)));
-
-            return $result;
-        } else {
-            return json_decode(Redis::get($key));
-        }
-
-        // return $this->cache->remember("categories.$id", self::TTL, function ($id) {
-        //     return $this->repository->find($id);
-        // });
+        return Cache::remember("categories.$id", self::TTL, function () use ($id) {
+            return $this->repository->find($id);
+        });
     }
 }

@@ -15,11 +15,11 @@ class CategoriesRepository implements CategoriesRepositoryInterface
 
     public function get($params)
     {
-        return $this->model->filterBy($params)->get();
+        return $this->model->filterBy($params)->paginate($params['limit'] ?? 10);
     }
 
     public function find($id)
     {
-        return $this->model->find($id);
+        return $this->model->findOrFail($id);
     }
 }

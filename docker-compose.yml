@@ -34,7 +34,7 @@ services:
     networks:
       - lumen
 
-  redis:
+  rediss:
     image: redis:alpine
     volumes:
       - "redisdata:/data"
