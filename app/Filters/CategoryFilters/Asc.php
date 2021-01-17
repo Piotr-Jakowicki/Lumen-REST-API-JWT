@@ -2,10 +2,10 @@
 
 namespace App\Filters\CategoryFilters;
 
-use App\Abstracts\QueryFilter;
-use App\Filters\OrderContract;
+use App\Abstracts\AbstractQueryFilter;
+use App\Interfaces\OrderInterface;
 
-class Asc extends QueryFilter implements OrderContract
+class Asc extends AbstractQueryFilter implements OrderInterface
 {
     public function handle(): void
     {

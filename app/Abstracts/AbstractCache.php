@@ -2,7 +2,7 @@
 
 namespace App\Abstracts;
 
-abstract class CacheAbstract
+abstract class AbstractCache
 {
     protected function prepareCacheKey($params)
     {

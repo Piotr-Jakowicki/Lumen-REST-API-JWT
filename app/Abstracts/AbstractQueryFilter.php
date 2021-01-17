@@ -2,7 +2,7 @@
 
 namespace App\Abstracts;
 
-abstract class QueryFilter
+abstract class AbstractQueryFilter
 {
     protected $query;
 

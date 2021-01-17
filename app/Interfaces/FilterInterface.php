@@ -1,8 +1,8 @@
 <?php
 
-namespace App\Filters;
+namespace App\Interfaces;
 
-interface FilterContract
+interface FilterInterface
 {
     public function handle($value): void;
 }

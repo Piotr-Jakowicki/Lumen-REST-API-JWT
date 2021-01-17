@@ -23,4 +23,27 @@ class CategoriesRepository implements CategoriesRepositoryInterface
     {
         return $this->model->findOrFail($id);
     }
+
+    public function store($attributes)
+    {
+        return Category::create($attributes);
+    }
+
+    public function update($id, $attributes)
+    {
+        $category = $this->find($id);
+
+        $category->update($attributes);
+
+        return $category;
+    }
+
+    public function delete($id)
+    {
+        $category = $this->find($id);
+
+        $category->delete();
+
+        return $category;
+    }
 }

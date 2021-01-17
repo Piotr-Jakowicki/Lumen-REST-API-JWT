@@ -2,10 +2,10 @@
 
 namespace App\Filters\CategoryFilters;
 
-use App\Abstracts\QueryFilter;
-use App\Filters\FilterContract;
+use App\Abstracts\AbstractQueryFilter;
+use App\Interfaces\FilterInterface;
 
-class Name extends QueryFilter implements FilterContract
+class Name extends AbstractQueryFilter implements FilterInterface
 {
     public function handle($value): void
     {

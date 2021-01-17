@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Category;
+use App\Models\User;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\DatabaseTransactions;
 
@@ -144,8 +145,11 @@ class CategoriesTest extends TestCase
     public function should_delete_category()
     {
         $category = Category::factory()->create();
+        $user = User::factory()->create();
 
-        $this->delete("/api/categories/$category->id");
+        $this
+            ->actingAs($user)
+            ->delete("/api/categories/$category->id");
 
         $this->assertEquals(200, $this->response->status());
         $this->seeJsonStructure([
@@ -170,9 +174,13 @@ class CategoriesTest extends TestCase
      */
     public function should_create_category()
     {
-        $this->post('/api/categories', [
-            'name' => 'Category'
-        ]);
+        $user = User::factory()->create();
+
+        $this
+            ->actingAs($user)
+            ->post('/api/categories', [
+                'name' => 'Category'
+            ]);
 
         $this->assertEquals(201, $this->response->status());
         $this->seeJson([
@@ -191,11 +199,14 @@ class CategoriesTest extends TestCase
     public function should_create_category_with_parent()
     {
         $category = Category::factory()->create();
+        $user = User::factory()->create();
 
-        $this->post('/api/categories', [
-            'name' => 'Category',
-            'parent_id' => $category->id
-        ]);
+        $this
+            ->actingAs($user)
+            ->post('/api/categories', [
+                'name' => 'Category',
+                'parent_id' => $category->id
+            ]);
 
         $this->assertEquals(201, $this->response->status());
         $this->seeJson([
@@ -213,9 +224,13 @@ class CategoriesTest extends TestCase
      */
     public function name_is_required_in_store_category()
     {
-        $this->post('/api/categories', [
-            'name' => ''
-        ]);
+        $user = User::factory()->create();
+
+        $this
+            ->actingAs($user)
+            ->post('/api/categories', [
+                'name' => ''
+            ]);
 
         $this->assertEquals(422, $this->response->status());
         $this->seeJsonStructure([
@@ -227,13 +242,16 @@ class CategoriesTest extends TestCase
     /**
      * @test
      */
-    public function category_myst_be_unique()
+    public function category_must_be_unique()
     {
         Category::factory()->create(['name' => 'unique']);
+        $user = User::factory()->create();
 
-        $this->post('/api/categories', [
-            'name' => 'unique'
-        ]);
+        $this
+            ->actingAs($user)
+            ->post('/api/categories', [
+                'name' => 'unique'
+            ]);
 
         $this->assertEquals(422, $this->response->status());
         $this->seeJsonStructure([
@@ -247,10 +265,13 @@ class CategoriesTest extends TestCase
     public function should_update_category()
     {
         $category = Category::factory()->create();
+        $user = User::factory()->create();
 
-        $this->patch("/api/categories/$category->id", [
-            'name' => "$category->name-updated"
-        ]);
+        $this
+            ->actingAs($user)
+            ->patch("/api/categories/$category->id", [
+                'name' => "$category->name-updated"
+            ]);
 
         $this->assertEquals(200, $this->response->status());
         $this->seeJson([
@@ -266,10 +287,13 @@ class CategoriesTest extends TestCase
     public function return_error_if_category_with_specified_parent_id_does_not_exists()
     {
         $category = Category::factory()->create();
+        $user = User::factory()->create();
 
-        $this->patch("/api/categories/$category->id", [
-            'parent_id' => -1
-        ]);
+        $this
+            ->actingAs($user)
+            ->patch("/api/categories/$category->id", [
+                'parent_id' => -1
+            ]);
 
         $this->assertEquals(422, $this->response->status());
         $this->seeJsonStructure([
@@ -282,9 +306,13 @@ class CategoriesTest extends TestCase
      */
     public function return_validation_error_if_category_model_does_not_exists_in_update_method()
     {
-        $this->patch('/api/categories/-1', [
-            'parent_id' => -1
-        ]);
+        $user = User::factory()->create();
+
+        $this
+            ->actingAs($user)
+            ->patch('/api/categories/-1', [
+                'parent_id' => -1
+            ]);
 
         $this->assertEquals(422, $this->response->status());
         $this->seeJsonStructure([
