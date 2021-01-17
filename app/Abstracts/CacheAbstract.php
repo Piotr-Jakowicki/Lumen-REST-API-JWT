@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repositories\Categories;
+namespace App\Abstracts;
 
 abstract class CacheAbstract
 {

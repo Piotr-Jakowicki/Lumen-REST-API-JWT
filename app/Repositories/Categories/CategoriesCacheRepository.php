@@ -2,6 +2,8 @@
 
 namespace App\Repositories\Categories;
 
+use App\Abstracts\CacheAbstract;
+use App\Interfaces\CategoriesRepositoryInterface;
 use Illuminate\Support\Facades\Cache;
 
 class CategoriesCacheRepository extends CacheAbstract implements CategoriesRepositoryInterface

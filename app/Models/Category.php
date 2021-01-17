@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-use App\Utilities\FilterBuilder;
+use App\Filters\FilterBuilder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -21,7 +21,7 @@ class Category extends Model
 
     public function scopeFilterBy($query, $filters)
     {
-        $namespace = 'App\Utilities\CategoryFilters';
+        $namespace = 'App\Filters\CategoryFilters';
         $filter = new FilterBuilder($query, $filters, $namespace);
 
         return $filter->apply();

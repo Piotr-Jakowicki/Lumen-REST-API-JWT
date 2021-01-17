@@ -1,7 +1,7 @@
 <?php
 
+use App\Interfaces\CategoriesRepositoryInterface;
 use App\Repositories\Categories\CategoriesCacheRepository;
-use App\Repositories\Categories\CategoriesRepositoryInterface;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 

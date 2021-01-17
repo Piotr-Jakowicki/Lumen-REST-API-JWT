@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\CategoryCollection;
 use App\Models\Category;
 use App\Http\Resources\CategoryResource;
-use App\Repositories\Categories\CategoriesRepositoryInterface;
+use App\Interfaces\CategoriesRepositoryInterface;
 use App\Requests\Categories\StoreRequest;
 use App\Requests\Categories\UpdateRequest;
 use Illuminate\Http\Request;

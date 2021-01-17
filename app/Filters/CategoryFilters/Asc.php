@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Utilities\CategoryFilters;
+namespace App\Filters\CategoryFilters;
 
-use App\Utilities\OrderContract;
-use App\Utilities\QueryFilter;
+use App\Abstracts\QueryFilter;
+use App\Filters\OrderContract;
 
 class Asc extends QueryFilter implements OrderContract
 {

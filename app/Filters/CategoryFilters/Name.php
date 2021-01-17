@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Utilities\CategoryFilters;
+namespace App\Filters\CategoryFilters;
 
-use App\Utilities\FilterContract;
-use App\Utilities\QueryFilter;
+use App\Abstracts\QueryFilter;
+use App\Filters\FilterContract;
 
 class Name extends QueryFilter implements FilterContract
 {
