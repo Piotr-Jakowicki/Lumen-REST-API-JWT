@@ -280,15 +280,15 @@ class CategoriesTest extends TestCase
     /**
      * @test
      */
-    public function return_error_if_category_model_does_not_exists_in_update_method()
+    public function return_validation_error_if_category_model_does_not_exists_in_update_method()
     {
         $this->patch('/api/categories/-1', [
             'parent_id' => -1
         ]);
 
-        $this->assertEquals(404, $this->response->status());
-        $this->seeJson([
-            'error' => 'Category not found!'
+        $this->assertEquals(422, $this->response->status());
+        $this->seeJsonStructure([
+            'parent_id'
         ]);
     }
 }

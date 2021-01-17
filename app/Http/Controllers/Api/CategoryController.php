@@ -7,10 +7,9 @@ use App\Http\Resources\CategoryCollection;
 use App\Models\Category;
 use App\Http\Resources\CategoryResource;
 use App\Repositories\Categories\CategoriesRepositoryInterface;
+use App\Requests\Categories\StoreRequest;
+use App\Requests\Categories\UpdateRequest;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\Log;
-use Illuminate\Support\Facades\Redis;
 
 class CategoryController extends Controller
 {
@@ -30,46 +29,32 @@ class CategoryController extends Controller
 
     public function show($id)
     {
-        $category = Category::findOrFail($id);
+        $category = $this->repository->find($id);
 
         return new CategoryResource($category);
     }
 
     public function destroy($id)
     {
-        $category = Category::findOrFail($id);
+        $category = $this->repository->find($id);
 
         $category->delete();
 
         return new CategoryResource($category);
     }
 
-    public function store(Request $request)
+    public function store(StoreRequest $request)
     {
-        $rules = [
-            'name' => 'required|string|unique:categories',
-            'parent_id' => 'sometimes|integer|nullable'
-        ];
-
-        $validated = $this->validate($request, $rules);
-
-        $category = Category::create($validated);
+        $category = Category::create($request->getParams()->all());
 
         return new CategoryResource($category);
     }
 
-    public function update(Request $request, $id)
+    public function update(UpdateRequest $request, $id)
     {
-        $category = Category::findOrFail($id);
+        $category = $this->repository->find($id);
 
-        $rules = [
-            'name' => 'sometimes|required|string|unique:categories',
-            'parent_id' => 'sometimes|integer|exists:categories,id'
-        ];
-
-        $validated = $this->validate($request, $rules);
-
-        $category->update($validated);
+        $category->update($request->getParams()->all());
 
         return new CategoryResource($category);
     }

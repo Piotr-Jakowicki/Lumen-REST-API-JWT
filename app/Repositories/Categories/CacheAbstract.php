@@ -2,9 +2,9 @@
 
 namespace App\Repositories\Categories;
 
-abstract class CacheBase
+abstract class CacheAbstract
 {
-    public function prepareCacheKey($params)
+    protected function prepareCacheKey($params)
     {
         ksort($params);
 
