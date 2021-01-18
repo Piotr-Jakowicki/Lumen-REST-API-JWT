@@ -34,4 +34,7 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     $router->delete('/categories/{id}', 'Api\CategoryController@destroy');
     $router->post('/categories', 'Api\CategoryController@store');
     $router->patch('/categories/{id}', 'Api\CategoryController@update');
+
+    //Images
+    $router->get('/images', 'Api\ImageController@index');
 });

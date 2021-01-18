@@ -1,10 +1,11 @@
 <?php
 
+use App\Models\Image;
 use App\Models\User;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\DatabaseTransactions;
 
-class ExampleTest extends TestCase
+class ImagesTest extends TestCase
 {
     use DatabaseMigrations;
 
@@ -35,6 +36,9 @@ class ExampleTest extends TestCase
      */
     public function list_can_be_filtered_by_title()
     {
+        // Image factory require at least 1 user
+        User::factory()->create();
+
         Image::factory()->count(10)->create(['title' => 'false']);
         Image::factory()->count(2)->create(['title' => 'true']);
 
@@ -59,6 +63,9 @@ class ExampleTest extends TestCase
      */
     public function list_can_be_sorted_asc_by_title()
     {
+        // Image factory require at least 1 user
+        User::factory()->create();
+
         Image::factory()->create(['title' => 'c']);
         Image::factory()->create(['title' => 'b']);
         Image::factory()->create(['title' => 'a']);
@@ -80,11 +87,14 @@ class ExampleTest extends TestCase
      */
     public function list_can_be_sorted_desc_by_title()
     {
-        Image::factory()->create(['title' => 'c']);
-        Image::factory()->create(['title' => 'b']);
-        Image::factory()->create(['title' => 'a']);
+        // Image factory require at least 1 user
+        User::factory()->create();
 
-        $this->get('/api/images?asc');
+        Image::factory()->create(['title' => 'a']);
+        Image::factory()->create(['title' => 'b']);
+        Image::factory()->create(['title' => 'c']);
+
+        $this->get('/api/images?desc');
 
         $this->assertEquals(200, $this->response->status());
         $response = (json_decode($this->response->getContent())->data);
