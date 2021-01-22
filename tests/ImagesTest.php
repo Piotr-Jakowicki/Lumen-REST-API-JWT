@@ -1,7 +1,12 @@
 <?php
 
+use App\Http\Controllers\Api\ImageController;
 use App\Models\Image;
 use App\Models\User;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Http\Client\Request;
+use Illuminate\Support\Facades\Storage;
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use Laravel\Lumen\Testing\DatabaseTransactions;
 
@@ -111,9 +116,12 @@ class ImagesTest extends TestCase
      */
     public function should_return_specified_category()
     {
-        $category = Image::factory()->create();
+        // Image factory require at least 1 user
+        User::factory()->create();
 
-        $this->get("/api/images/$category->id");
+        $image = Image::factory()->create();
+
+        $this->get("/api/images/$image->id");
 
         $this->assertEquals(200, $this->response->status());
         $this->seeJsonStructure([
@@ -126,9 +134,10 @@ class ImagesTest extends TestCase
         ]);
         $this->seeJson([
             'data' => [
-                'id' => $category->id,
-                'parent_id' => $category->parent_id,
-                'name' => $category->name
+                'id' => $image->id,
+                'user_id' => $image->user_id,
+                'title' => $image->title,
+                'path' => $image->path
             ]
         ]);
     }
@@ -138,7 +147,10 @@ class ImagesTest extends TestCase
      */
     public function should_return_error_if_image_does_not_exist_in_show_method()
     {
-        $category = Image::factory()->create();
+        // Image factory require at least 1 user
+        User::factory()->create();
+
+        $image = Image::factory()->create();
 
         $this->get('/api/images/-1');
 
@@ -147,14 +159,17 @@ class ImagesTest extends TestCase
             'error'
         ]);
         $this->seeJson([
-            'error' => 'Category not found!'
+            'error' => 'Image not found!'
         ]);
     }
 
+    /**
+     * @test
+     */
     public function should_delete_image()
     {
-        $image = Image::factory()->create();
         $user = User::factory()->create();
+        $image = Image::factory()->create();
 
         $this
             ->actingAs($user)
@@ -172,7 +187,7 @@ class ImagesTest extends TestCase
         $this->seeJson([
             'data' => [
                 'id' => $image->id,
-                'user_id' => $user->user_id,
+                'user_id' => $image->user_id,
                 'path' => $image->path,
                 'title' => $image->title
             ]
@@ -187,65 +202,71 @@ class ImagesTest extends TestCase
     {
         $user = User::factory()->create();
 
+        Storage::fake('public');
+
         $this
             ->actingAs($user)
-            ->post('/api/categories', [
-                'title' => 'Image'
+            ->post('/api/images', [
+                'title' => 'Image',
+                'image' => UploadedFile::fake()->image('img.png')
             ]);
 
         $this->assertEquals(201, $this->response->status());
-        $this->seeJson([
+        $this->seeJsonStructure([
             'data' => [
-                'id' => 1,
-                'parent_id' => null,
-                'title' => 'Image'
+                'id',
+                'user_id',
+                'title',
+                'path'
             ]
         ]);
-        $this->seeInDatabase('categories', ['title' => 'Image']);
+        $this->seeInDatabase('images', ['title' => 'Image']);
     }
 
     // TODO store valdation test
 
     /**
      * @test
+     * @TODO fix update test >> require _method=PATCH
      */
     public function should_update_image()
     {
-        $image = Image::factory()->create();
         $user = User::factory()->create();
+        $image = Image::factory()->create();
 
-        $this
-            ->actingAs($user)
-            ->patch("/api/images/$image->id", [
-                'title' => "$image->title-updated",
-                'path' => "$image->path-updated"
-            ]);
+        Storage::fake('public');
+
+        // Weird way to pass new image because _method=PATCH as parameter dont work
+        $request = $this->createRequest(
+            'POST',
+            [],
+            '/api/images/1',
+            [],
+            [],
+            [],
+            ['image' => UploadedFile::fake()->image('img.png')]
+        );
+
+        // Directly pass data to ImageController@update
+        $response = app()->call('App\Http\Controllers\Api\ImageController@update', ['id' => 1, 'request' => $request]);
+
+        $this->patch('/api/images/1', ['title' => 'new title']);
 
         $this->assertEquals(200, $this->response->status());
-        $this->seeJson([
-            'id' => $image->id,
-            'title' => "$image->title-updated",
-            'user_id' => $image->user_id
-        ]);
-    }
-
-    /**
-     * @test
-     */
-    public function return_error_if_user_id_does_not_exists()
-    {
-        $category = Category::factory()->create();
-        $user = User::factory()->create();
-
-        $this
-            ->actingAs($user)
-            ->patch("/api/categories/$category->id", [
-                'parent_id' => -1
-            ]);
-
-        $this->assertEquals(422, $this->response->status());
         $this->seeJsonStructure([
-            'parent_id'
+            'data' => [
+                'title',
+                'path'
+            ]
+        ]);
+
+        $this->seeJson([
+            'data' => [
+                'id' => 1,
+                'title' => 'new title',
+                'path' => $response->path,
+                'user_id' => $user->id
+            ]
         ]);
     }
 
@@ -266,5 +287,28 @@ class ImagesTest extends TestCase
         $this->seeJsonStructure([
             'error'
         ]);
+    }
+
+    protected function createRequest(
+        $method,
+        $content,
+        $uri,
+        $server,
+        $parameters = [],
+        $cookies = [],
+        $files = []
+    ) {
+        $request = new \Illuminate\Http\Request;
+        return $request->createFromBase(
+            \Symfony\Component\HttpFoundation\Request::create(
+                $uri,
+                $method,
+                $parameters,
+                $cookies,
+                $files,
+                $server,
+                $content
+            )
+        );
     }
 }

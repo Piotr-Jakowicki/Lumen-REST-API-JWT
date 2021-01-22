@@ -37,4 +37,8 @@ $router->group(['prefix' => 'api'], function () use ($router) {
 
     //Images
     $router->get('/images', 'Api\ImageController@index');
+    $router->get('/images/{id}', 'Api\ImageController@show');
+    $router->delete('/images/{id}', 'Api\ImageController@destroy');
+    $router->post('/images', 'Api\ImageController@store');
+    $router->patch('/images/{id}', 'Api\ImageController@update');
 });
