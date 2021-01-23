@@ -223,11 +223,42 @@ class ImagesTest extends TestCase
         $this->seeInDatabase('images', ['title' => 'Image']);
     }
 
-    // TODO store valdation test
+    /**
+     * @test
+     */
+    public function image_store_validation_form()
+    {
+        $this->post('/api/images', [
+            'image' => '',
+            'title' => ''
+        ]);
+
+        $this->assertEquals(422, $this->response->status());
+        $this->seeJsonStructure([
+            'image',
+            'title'
+        ]);
+    }
 
     /**
      * @test
-     * @TODO fix update test >> require _method=PATCH
+     */
+    public function image_update_validation_form()
+    {
+        $this->post('/api/images', [
+            'image' => '',
+            'title' => ''
+        ]);
+
+        $this->assertEquals(422, $this->response->status());
+        $this->seeJsonStructure([
+            'image',
+            'title'
+        ]);
+    }
+
+    /**
+     * @test
      */
     public function should_update_image()
     {

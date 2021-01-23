@@ -49,6 +49,13 @@ class ImageController extends Controller
 
     public function store(Request $request)
     {
+        $rules = [
+            'image' => 'required|mimes:jpeg,jpg,png,gif|max:10000',
+            'title' => 'required|string|max:100'
+        ];
+
+        $this->validate($request, $rules);
+
         $path = Storage::put('public', $request->image);
         $url = Storage::url($path);
 
@@ -65,6 +72,13 @@ class ImageController extends Controller
 
     public function update(Request $request, $id)
     {
+        $rules = [
+            'image' => 'sometimes|required|mimes:jpeg,jpg,png,gif|max:10000',
+            'title' => 'sometimes|required|string|max:100'
+        ];
+
+        $this->validate($request, $rules);
+
         $image = Image::findOrFail($id);
 
         if ($request->hasFile('image')) {
