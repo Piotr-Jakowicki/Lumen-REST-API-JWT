@@ -5,44 +5,41 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\ImageCollection;
 use App\Http\Resources\ImageResource;
+use App\Interfaces\ImagesRepositoryInterface;
 use App\Models\Image;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class ImageController extends Controller
 {
+    private $repository;
     /**
      * Create a new controller instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(ImagesRepositoryInterface $repository)
     {
-        //
+        $this->repository = $repository;
     }
 
     public function index(Request $request)
     {
-        $images = Image::filterBy($request->all())->paginate($request['limit'] ?? 10);
+        $images = $this->repository->get($request->all());
 
         return new ImageCollection($images);
     }
 
     public function show($id)
     {
-        $image = Image::findOrFail($id);
+        $image = $this->repository->find($id);
 
         return new ImageResource($image);
     }
 
     public function destroy($id)
     {
-        $image = Image::findOrFail($id);
-
-        $image->delete();
+        $image = $this->repository->delete($id);
 
         return new ImageResource($image);
     }
@@ -56,16 +53,7 @@ class ImageController extends Controller
 
         $this->validate($request, $rules);
 
-        $path = Storage::put('public', $request->image);
-        $url = Storage::url($path);
-
-        $data = [
-            'path' => url() . $url,
-            'title' => $request->title,
-            'user_id' => Auth::id(),
-        ];
-
-        $image = Image::create($data);
+        $image = $this->repository->store($request->all());
 
         return new ImageResource($image);
     }
@@ -79,28 +67,8 @@ class ImageController extends Controller
 
         $this->validate($request, $rules);
 
-        $image = Image::findOrFail($id);
+        $image = $this->repository->update($id, $request->except('user_id'));
 
-        if ($request->hasFile('image')) {
-            $oldPath = last(explode('/', $image->path));
-            Storage::delete("public/$oldPath");
-
-            $path = Storage::put('public', $request->image);
-            $url = Storage::url($path);
-
-            $newPath = ['path' => url() . $url];
-        }
-
-
-        if (isset($newPath)) {
-            $request = array_merge($request->only('title'), $newPath);
-        } else {
-            $request = $request->only('title');
-        }
-
-        $image->update($request);
-
-        //return $newPath;
         return new ImageResource($image);
     }
 }
