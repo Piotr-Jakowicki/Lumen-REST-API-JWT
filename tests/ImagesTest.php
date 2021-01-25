@@ -2,6 +2,7 @@
 
 use App\Models\Image;
 use App\Models\User;
+use App\Requests\Images\UpdateRequest;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
@@ -260,10 +261,10 @@ class ImagesTest extends TestCase
      */
     public function should_update_image()
     {
+        Storage::fake('public');
+
         $user = User::factory()->create();
         $image = Image::factory()->create();
-
-        Storage::fake('public');
 
         // Weird way to pass new image because _method=PATCH as parameter dont work
         $request = $this->createRequest(
@@ -276,7 +277,9 @@ class ImagesTest extends TestCase
             ['image' => UploadedFile::fake()->image('img.png')]
         );
 
-        // Directly pass data to ImageController@update
+        $request = new UpdateRequest($request);
+
+        // Directly pass new request instance to ImageContoller@update
         $response = app()->call('App\Http\Controllers\Api\ImageController@update', ['id' => 1, 'request' => $request]);
 
         $this->patch('/api/images/1', ['title' => 'new title']);

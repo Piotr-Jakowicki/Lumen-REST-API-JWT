@@ -4,9 +4,6 @@ namespace App\Repositories\Images;
 
 use App\Interfaces\ImagesRepositoryInterface;
 use App\Models\Image;
-use App\Pipes\ImageIsSet;
-use App\Pipes\TitleIsSet;
-use Illuminate\Pipeline\Pipeline;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
 
