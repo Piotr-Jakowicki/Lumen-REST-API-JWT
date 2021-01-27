@@ -41,4 +41,11 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     $router->delete('/images/{id}', 'Api\ImageController@destroy');
     $router->post('/images', 'Api\ImageController@store');
     $router->patch('/images/{id}', 'Api\ImageController@update');
+
+    //Collections
+    $router->get('/collections', 'Api\CollectionController@index');
+    $router->get('/collections/{id}', 'Api\CollectionController@show');
+    $router->delete('/collections/{id}', 'Api\CollectionController@destroy');
+    $router->post('/collections', 'Api\CollectionController@store');
+    $router->patch('/collections/{id}', 'Api\CollectionController@update');
 });
