@@ -19,6 +19,15 @@ class Collection extends Model
         'user_id', 'name'
     ];
 
+    /**
+     * The attributes that should be cast to native types.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'user_id' => 'integer',
+    ];
+
     public function scopeFilterBy($query, $filters)
     {
         $namespace = 'App\Filters\CollectionFilters';

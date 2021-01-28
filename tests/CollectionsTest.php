@@ -105,4 +105,89 @@ class CollectionsTest extends TestCase
     }
 
     // End Index
+
+    // Show
+
+    /**
+     * @test
+     */
+    public function should_return_specified_collection()
+    {
+        User::factory()->create();
+        $collection = Collection::factory()->create();
+
+        $this->get("/api/collections/$collection->id");
+
+        $this->assertEquals(200, $this->response->status());
+        $this->seeJsonStructure([
+            'data' => [
+                'id',
+                'user_id',
+                'name'
+            ]
+        ]);
+        $this->seeJson([
+            'data' => [
+                'id' => $collection->id,
+                'user_id' => $collection->user_id,
+                'name' => $collection->name
+            ]
+        ]);
+    }
+
+    /**
+     * @test
+     */
+    public function should_return_error_if_collection_with_specified_id_does_not_exists_in_show_method()
+    {
+        User::factory()->create();
+        $collection = Collection::factory()->create();
+
+        $this->get("/api/collections/-1");
+
+        $this->assertEquals(404, $this->response->status());
+        $this->seeJsonStructure([
+            'error'
+        ]);
+        $this->seeJson([
+            'error' => 'Collection not found!'
+        ]);
+    }
+
+    // End Show
+
+    // Delete
+
+    /**
+     * @test
+     */
+    public function should_delete_collction()
+    {
+        User::factory()->create();
+        $collection = Collection::factory()->create();
+
+        $this->seeInDatabase('collections', ['id' => $collection->id]);
+
+        $this->delete("/api/collections/$collection->id");
+
+        $this->assertEquals(200, $this->response->status());
+        $this->seeJsonStructure([
+            'data' => [
+                'id',
+                'user_id',
+                'name'
+            ]
+        ]);
+        $this->seeJson([
+            'data' => [
+                'id' => $collection->id,
+                'user_id' => $collection->user_id,
+                'name' => $collection->name
+            ]
+        ]);
+
+        $this->notSeeInDatabase('collections', ['id' => $collection->id]);
+    }
+
+    // End Delete
 }
