@@ -7,6 +7,7 @@ use App\Http\Resources\CollectionCollection;
 use App\Http\Resources\CollectionResource;
 use Illuminate\Http\Request;
 use App\Models\Collection;
+use Illuminate\Support\Facades\Auth;
 
 class CollectionController extends Controller
 {
@@ -38,11 +39,31 @@ class CollectionController extends Controller
         return new CollectionResource($collection);
     }
 
-    public function store($request)
+    public function store(Request $request)
     {
+        $rules = [
+            'name' => 'required'
+        ];
+
+        $this->validate($request, $rules);
+
+        $data = [
+            'user_id' => Auth::id()
+        ];
+
+        $collection = Collection::create(
+            array_merge($request->only(['name']), $data)
+        );
+
+        return new CollectionResource($collection);
     }
 
-    public function update($request, $id)
+    public function update(Request $request, $id)
     {
+        $collection = Collection::findOrFail($id);
+
+        $collection->update($request->all());
+
+        return new CollectionResource($collection);
     }
 }
