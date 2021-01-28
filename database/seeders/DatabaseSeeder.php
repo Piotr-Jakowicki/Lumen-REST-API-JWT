@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Category;
 use App\Models\Image;
 use App\Models\User;
+use App\Models\Collection;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -24,5 +25,6 @@ class DatabaseSeeder extends Seeder
         }
 
         Image::factory()->times(10)->create();
+        Collection::factory()->times(10)->create();
     }
 }
