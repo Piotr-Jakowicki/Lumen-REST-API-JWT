@@ -1,15 +1,15 @@
 <?php
 
-namespace App\Repositories\Categories;
+namespace App\Repositories\Collections;
 
-use App\Interfaces\CategoriesRepositoryInterface;
-use App\Models\Category;
+use App\Interfaces\CollectionsRepositoryInterface;
+use App\Models\Collection;
 
-class CategoriesRepository implements CategoriesRepositoryInterface
+class CollectionsRepository implements CollectionsRepositoryInterface
 {
     protected $model;
 
-    public function __construct(Category $model)
+    public function __construct(Collection $model)
     {
         $this->model = $model;
     }
@@ -31,19 +31,20 @@ class CategoriesRepository implements CategoriesRepositoryInterface
 
     public function update($id, $attributes)
     {
-        $category = $this->find($id);
+        $collection = $this->find($id);
 
-        $category->update($attributes);
+        $collection->update($attributes);
 
-        return $category;
+        return $collection;
     }
 
     public function delete($id)
     {
-        $category = $this->find($id);
 
-        $category->delete();
+        $collection = $this->find($id);
 
-        return $category;
+        $collection->delete();
+
+        return $collection;
     }
 }

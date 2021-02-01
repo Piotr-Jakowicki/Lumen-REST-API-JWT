@@ -3,6 +3,8 @@
 use Laravel\Lumen\Testing\DatabaseMigrations;
 use App\Models\Collection;
 use App\Models\User;
+use App\Repositories\Collections\CollectionsRepository;
+use Mockery\MockInterface;
 
 class CollectionsTest extends TestCase
 {
@@ -141,7 +143,7 @@ class CollectionsTest extends TestCase
     public function should_return_error_if_collection_with_specified_id_does_not_exists_in_show_method()
     {
         User::factory()->create();
-        $collection = Collection::factory()->create();
+        Collection::factory()->create();
 
         $this->get("/api/collections/-1");
 
@@ -248,9 +250,9 @@ class CollectionsTest extends TestCase
     /**
      * @test
      */
-    public function collection_store_only_if_user_is_authenticated()
-    {
-    }
+    // public function collection_store_only_if_user_is_authenticated()
+    // {
+    // }
 
     // End Store
 
@@ -290,24 +292,16 @@ class CollectionsTest extends TestCase
     /**
      * @test
      */
-    public function collection_update_only_if_user_is_authenticated()
-    {
-    }
+    // public function collection_update_only_if_user_is_authenticated()
+    // {
+    // }
 
     /**
      * @test
      */
-    public function collection_update_only_if_user_is_owner_of_collection()
-    {
-    }
+    // public function collection_update_only_if_user_is_owner_of_collection()
+    // {
+    // }
 
     // End Update
-
-    // Repository Mock
-
-    // End Repository Mock
-
-    // Cache Mock
-
-    // End Cache Mock
 }
