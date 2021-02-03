@@ -35,6 +35,10 @@ $router->group(['prefix' => 'api'], function () use ($router) {
     $router->post('/categories', 'Api\CategoryController@store');
     $router->patch('/categories/{id}', 'Api\CategoryController@update');
 
+    // Category Images
+
+    $router->get('/categories/{id}/images', 'Api\CategoryImageController@index');
+
     //Images
     $router->get('/images', 'Api\ImageController@index');
     $router->get('/images/{id}', 'Api\ImageController@show');

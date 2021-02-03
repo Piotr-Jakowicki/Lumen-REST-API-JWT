@@ -4,6 +4,7 @@ namespace App\Repositories\Categories;
 
 use App\Abstracts\AbstractCache;
 use App\Interfaces\CategoriesRepositoryInterface;
+use App\Repositories\Categories\CategoriesRepository;
 use Illuminate\Support\Facades\Cache;
 
 class CategoriesCacheRepository extends AbstractCache implements CategoriesRepositoryInterface

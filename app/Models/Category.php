@@ -19,11 +19,18 @@ class Category extends Model
         'parent_id', 'name'
     ];
 
+    protected $hidden = ['pivot'];
+
     public function scopeFilterBy($query, $filters)
     {
         $namespace = 'App\Filters\CategoryFilters';
         $filter = new FilterBuilder($query, $filters, $namespace);
 
         return $filter->apply();
+    }
+
+    public function images()
+    {
+        return $this->belongsToMany(Image::class);
     }
 }

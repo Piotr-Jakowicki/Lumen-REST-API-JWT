@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Category;
+use App\Models\CategoryImage;
 use App\Models\Image;
 use App\Models\User;
 use App\Models\Collection;
@@ -26,5 +27,6 @@ class DatabaseSeeder extends Seeder
 
         Image::factory()->times(10)->create();
         Collection::factory()->times(10)->create();
+        CategoryImage::factory()->times(30)->create();
     }
 }
