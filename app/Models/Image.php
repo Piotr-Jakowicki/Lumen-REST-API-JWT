@@ -25,7 +25,6 @@ class Image extends Model
      * @var array
      */
     protected $casts = [
-        'id' => 'integer',
         'user_id' => 'integer'
     ];
 

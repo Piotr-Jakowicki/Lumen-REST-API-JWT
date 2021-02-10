@@ -20,16 +20,8 @@ class CategoryImageController extends Controller
 
     public function index(Request $request, $id)
     {
-        // $images = Category::findOrFail($id)->images;
-        // return response()->json($images);
         $images = $this->repository->get($request->all(), $id);
 
-        //return ImageResource::collection($images);
-
         return new ImageCollection($images);
-
-        $category = Category::findOrFail($id);
-
-        $images = $category->images()->paginate($request->limit ?? 10);
     }
 }

@@ -20,12 +20,11 @@ class CategoryImageCacheRepository extends AbstractCache implements CategoryImag
 
     public function get($params, $id)
     {
-        dd($this->repository);
         $key = "category_image_" . $this->prepareCacheKey($params);
 
         // add category_image to image/category cache flush
 
-        return Cache::tags('category_image')->remember($key, self::TTL, function () use ($params, $id) {
+        return Cache::tags("category_image_$id")->remember($key, self::TTL, function () use ($params, $id) {
             return $this->repository->get($params, $id);
         });
     }

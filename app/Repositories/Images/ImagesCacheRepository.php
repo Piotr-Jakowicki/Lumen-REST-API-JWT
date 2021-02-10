@@ -35,7 +35,7 @@ class ImagesCacheRepository extends AbstractCache implements ImagesRepositoryInt
 
     public function store($attributes)
     {
-        Cache::tags('images')->flush();
+        Cache::tags(['images', 'category_image'])->flush();
 
         return $this->repository->store($attributes);
     }
@@ -44,7 +44,7 @@ class ImagesCacheRepository extends AbstractCache implements ImagesRepositoryInt
     {
         $updatedImage = $this->repository->update($id, $attributes);
 
-        Cache::tags(["images_$id", 'images'])->flush();
+        Cache::tags(["images_$id", 'images', 'category_image'])->flush();
 
         return $updatedImage;
     }
@@ -53,7 +53,7 @@ class ImagesCacheRepository extends AbstractCache implements ImagesRepositoryInt
     {
         $deletedImage = $this->repository->delete($id);
 
-        Cache::tags(["images_$id", 'images'])->flush();
+        Cache::tags(["images_$id", 'images', 'category_image'])->flush();
 
         return $deletedImage;
     }
