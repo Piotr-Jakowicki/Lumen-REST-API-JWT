@@ -27,7 +27,8 @@ class Image extends Model
     protected $casts = [
         'id' => 'integer',
         'user_id' => 'integer',
-        'categories' => 'json'
+        'categories' => 'json',
+        'user_id' => 'integer'
     ];
 
     protected $hidden = [

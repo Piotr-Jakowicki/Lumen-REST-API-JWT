@@ -28,19 +28,27 @@ class ImagesRepository implements ImagesRepositoryInterface
 
     public function store($attributes)
     {
+        // refactore
+
         $url = $this->uploadImage($attributes['image']);
 
-        // fix
-
-        return Image::create([
+        $image = $this->model->create([
             'path' => url() . $url,
             'title' => $attributes['title'],
             'user_id' => Auth::id(),
         ]);
+
+        $categoryIds = $attributes['categories'];
+
+        $image->categories()->attach(explode(',', $categoryIds));
+
+        return $image;
     }
 
     public function update($id, $attributes)
     {
+        // refactor logic to service
+
         $image = $this->find($id);
 
         // add it to service
