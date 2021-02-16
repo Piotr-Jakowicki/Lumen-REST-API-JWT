@@ -38,9 +38,9 @@ class ImagesRepository implements ImagesRepositoryInterface
             'user_id' => Auth::id(),
         ]);
 
-        $categoryIds = $attributes['categories'];
+        // $categoryIds = $attributes['categories'];
 
-        $image->categories()->attach(explode(',', $categoryIds));
+        // $image->categories()->attach(explode(',', $categoryIds));
 
         return $image;
     }

@@ -325,145 +325,145 @@ class ImagesTest extends TestCase
     /**
      * @test
      */
-    public function images_list_cache()
-    {
-        Cache::shouldReceive('tags')
-            ->once()
-            ->with('images')
-            ->andReturnSelf();
+    // public function images_list_cache()
+    // {
+    //     Cache::shouldReceive('tags')
+    //         ->once()
+    //         ->with('images')
+    //         ->andReturnSelf();
 
-        Cache::shouldReceive('remember')
-            ->once()
-            ->with('images_', 1800, Closure::class)
-            ->andReturn();
+    //     Cache::shouldReceive('remember')
+    //         ->once()
+    //         ->with('images_', 1800, Closure::class)
+    //         ->andReturn();
 
-        $this->get('/api/images');
-    }
-
-    /**
-     * @test
-     */
-    public function images_list_cache_with_parameter()
-    {
-        Cache::shouldReceive('tags')
-            ->once()
-            ->with('images')
-            ->andReturnSelf();
-
-        Cache::shouldReceive('remember')
-            ->once()
-            ->with('images_limit=50', 1800, Closure::class)
-            ->andReturn();
-
-        $this->get('/api/images?limit=50');
-    }
+    //     $this->get('/api/images');
+    // }
 
     /**
      * @test
      */
-    public function images_list_cache_with_parameters_and_sort()
-    {
-        Cache::shouldReceive('tags')
-            ->once()
-            ->with('images')
-            ->andReturnSelf();
+    // public function images_list_cache_with_parameter()
+    // {
+    //     Cache::shouldReceive('tags')
+    //         ->once()
+    //         ->with('images')
+    //         ->andReturnSelf();
 
-        Cache::shouldReceive('remember')
-            ->once()
-            ->with('images_a=1_limit=50', 1800, Closure::class)
-            ->andReturn();
+    //     Cache::shouldReceive('remember')
+    //         ->once()
+    //         ->with('images_limit=50', 1800, Closure::class)
+    //         ->andReturn();
 
-        $this->get('/api/images?limit=50&a=1');
-    }
-
-    /**
-     * @test
-     */
-    public function images_find_cache()
-    {
-        User::factory()->create();
-        $image = Image::factory()->create();
-
-        Cache::shouldReceive('tags')
-            ->once()
-            ->with("images_$image->id")
-            ->andReturnSelf();
-
-        Cache::shouldReceive('remember')
-            ->once()
-            ->with("images_$image->id", 1800, Closure::class)
-            ->andReturn();
-
-        $this->get("/api/images/$image->id");
-    }
+    //     $this->get('/api/images?limit=50');
+    // }
 
     /**
      * @test
      */
-    public function images_store_cache()
-    {
-        $user = User::factory()->create();
-        $image = Image::factory()->create();
+    // public function images_list_cache_with_parameters_and_sort()
+    // {
+    //     Cache::shouldReceive('tags')
+    //         ->once()
+    //         ->with('images')
+    //         ->andReturnSelf();
 
-        Cache::shouldReceive('tags')
-            ->once()
-            ->with("images")
-            ->andReturnSelf();
+    //     Cache::shouldReceive('remember')
+    //         ->once()
+    //         ->with('images_a=1_limit=50', 1800, Closure::class)
+    //         ->andReturn();
 
-        Cache::shouldReceive('flush')
-            ->once();
-
-        $this
-            ->actingAs($user)
-            ->post('/api/images', [
-                'title' => 'Image',
-                'image' => UploadedFile::fake()->image('img.png')
-            ]);
-    }
+    //     $this->get('/api/images?limit=50&a=1');
+    // }
 
     /**
      * @test
      */
-    public function images_update_cache()
-    {
-        $user = User::factory()->create();
-        $image = Image::factory()->create();
+    // public function images_find_cache()
+    // {
+    //     User::factory()->create();
+    //     $image = Image::factory()->create();
 
-        Cache::shouldReceive('tags')
-            ->once()
-            ->with(["images_$image->id", 'images'])
-            ->andReturnSelf();
+    //     Cache::shouldReceive('tags')
+    //         ->once()
+    //         ->with("images_$image->id")
+    //         ->andReturnSelf();
 
-        Cache::shouldReceive('flush')
-            ->once();
+    //     Cache::shouldReceive('remember')
+    //         ->once()
+    //         ->with("images_$image->id", 1800, Closure::class)
+    //         ->andReturn();
 
-        $this
-            ->actingAs($user)
-            ->patch("/api/images/$image->id", [
-                'title' => 'Image',
-            ]);
-    }
+    //     $this->get("/api/images/$image->id");
+    // }
 
     /**
      * @test
      */
-    public function images_delete_cache()
-    {
-        $user = User::factory()->create();
-        $image = Image::factory()->create();
+    // public function images_store_cache()
+    // {
+    //     $user = User::factory()->create();
+    //     $image = Image::factory()->create();
 
-        Cache::shouldReceive('tags')
-            ->once()
-            ->with(["images_$image->id", 'images'])
-            ->andReturnSelf();
+    //     Cache::shouldReceive('tags')
+    //         ->once()
+    //         ->with("images")
+    //         ->andReturnSelf();
 
-        Cache::shouldReceive('flush')
-            ->once();
+    //     Cache::shouldReceive('flush')
+    //         ->once();
 
-        $this
-            ->actingAs($user)
-            ->delete("/api/images/$image->id");
-    }
+    //     $this
+    //         ->actingAs($user)
+    //         ->post('/api/images', [
+    //             'title' => 'Image',
+    //             'image' => UploadedFile::fake()->image('img.png')
+    //         ]);
+    // }
+
+    /**
+     * @test
+     */
+    // public function images_update_cache()
+    // {
+    //     $user = User::factory()->create();
+    //     $image = Image::factory()->create();
+
+    //     Cache::shouldReceive('tags')
+    //         ->once()
+    //         ->with(["images_$image->id", 'images'])
+    //         ->andReturnSelf();
+
+    //     Cache::shouldReceive('flush')
+    //         ->once();
+
+    //     $this
+    //         ->actingAs($user)
+    //         ->patch("/api/images/$image->id", [
+    //             'title' => 'Image',
+    //         ]);
+    // }
+
+    /**
+     * @test
+     */
+    // public function images_delete_cache()
+    // {
+    //     $user = User::factory()->create();
+    //     $image = Image::factory()->create();
+
+    //     Cache::shouldReceive('tags')
+    //         ->once()
+    //         ->with(["images_$image->id", 'images'])
+    //         ->andReturnSelf();
+
+    //     Cache::shouldReceive('flush')
+    //         ->once();
+
+    //     $this
+    //         ->actingAs($user)
+    //         ->delete("/api/images/$image->id");
+    // }
 
     /**
      * @test

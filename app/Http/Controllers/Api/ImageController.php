@@ -63,7 +63,9 @@ class ImageController extends Controller
     {
         $image = $this->repository->update($id, $request->getParams()->except('user_id'));
 
-        $image->categories()->sync($request->getParams()->categories);
+        if (isset($request->getParams()->categories)) {
+            $image->categories()->attach($request->getParams()->categories);
+        }
 
         return new ImageResource($image);
     }
