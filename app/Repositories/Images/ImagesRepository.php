@@ -30,6 +30,8 @@ class ImagesRepository implements ImagesRepositoryInterface
     {
         $url = $this->uploadImage($attributes['image']);
 
+        // fix
+
         return Image::create([
             'path' => url() . $url,
             'title' => $attributes['title'],
@@ -40,6 +42,8 @@ class ImagesRepository implements ImagesRepositoryInterface
     public function update($id, $attributes)
     {
         $image = $this->find($id);
+
+        // add it to service
 
         if (isset($attributes['image'])) {
             $oldPath = last(explode('/', $image->path));

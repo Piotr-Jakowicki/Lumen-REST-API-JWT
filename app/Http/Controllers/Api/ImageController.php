@@ -25,6 +25,8 @@ class ImageController extends Controller
 
     public function index(Request $request)
     {
+        // load relations by param
+
         $images = $this->repository->get($request->all());
 
         return new ImageCollection($images);
@@ -48,12 +50,20 @@ class ImageController extends Controller
     {
         $image = $this->repository->store($request->getParams()->all());
 
+        // refactore in service 
+
+        if (isset($request->getParams()->categories)) {
+            $image->categories()->attach($request->getParams()->categories);
+        }
+
         return new ImageResource($image);
     }
 
     public function update(UpdateRequest $request, $id)
     {
         $image = $this->repository->update($id, $request->getParams()->except('user_id'));
+
+        $image->categories()->sync($request->getParams()->categories);
 
         return new ImageResource($image);
     }

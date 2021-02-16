@@ -5,7 +5,7 @@ use App\Interfaces\CategoryImageRepositoryInterface;
 use App\Interfaces\CollectionsRepositoryInterface;
 use App\Interfaces\ImagesRepositoryInterface;
 use App\Repositories\Categories\CategoriesCacheRepository;
-use App\Repositories\CategoryImage\CategoryImageRepository;
+use App\Repositories\CategoryImage\CategoryImageCacheRepository;
 use App\Repositories\Collections\CollectionsCacheRepository;
 use App\Repositories\Images\ImagesCacheRepository;
 
@@ -128,7 +128,7 @@ $app->register(\Illuminate\Cache\CacheServiceProvider::class);
 $app->bind(ImagesRepositoryInterface::class, ImagesCacheRepository::class);
 $app->bind(CategoriesRepositoryInterface::class, CategoriesCacheRepository::class);
 $app->bind(CollectionsRepositoryInterface::class, CollectionsCacheRepository::class);
-$app->bind(CategoryImageRepositoryInterface::class, CategoryImageRepository::class);
+$app->bind(CategoryImageRepositoryInterface::class, CategoryImageCacheRepository::class);
 
 /**
  * Aliases

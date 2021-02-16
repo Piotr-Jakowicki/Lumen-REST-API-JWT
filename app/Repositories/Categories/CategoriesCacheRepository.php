@@ -45,7 +45,7 @@ class CategoriesCacheRepository extends AbstractCache implements CategoriesRepos
     {
         $updatedCategory = $this->repository->update($id, $attributes);
 
-        Cache::tags("categorie_$id")->flush();
+        Cache::tags(["categorie_$id", "category_image_$id"])->flush();
 
         return $updatedCategory;
     }
@@ -54,7 +54,7 @@ class CategoriesCacheRepository extends AbstractCache implements CategoriesRepos
     {
         $deletedCategory = $this->repository->delete($id);
 
-        Cache::tags(["categorie_$id", 'categories'])->flush();
+        Cache::tags(["categorie_$id", 'categories', "category_image_$id"])->flush();
 
         return $deletedCategory;
     }

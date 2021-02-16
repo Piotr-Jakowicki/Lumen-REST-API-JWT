@@ -35,26 +35,51 @@ class ImagesCacheRepository extends AbstractCache implements ImagesRepositoryInt
 
     public function store($attributes)
     {
-        Cache::tags('images')->flush();
+        // make tags only if ctegories are set
+        // @todo add makeTags class
+        if (isset($attributes['categories'])) {
+            $tags = $this->getAllTags($attributes['categories']);
+        } else {
+            $tags = [];
+        }
+
+        Cache::tags(['images', ...$tags])->flush();
 
         return $this->repository->store($attributes);
     }
 
     public function update($id, $attributes)
     {
+        $tags = $this->getAllTags($attributes['categories']);
+
         $updatedImage = $this->repository->update($id, $attributes);
 
-        Cache::tags(["images_$id", 'images'])->flush();
+        Cache::tags(["images_$id", 'images', ...$tags])->flush();
 
         return $updatedImage;
     }
 
     public function delete($id)
     {
+        $image = $this->repository->find($id);
+
+        $ids = $image->categories()->pluck('id');
+
+        $tags = $this->getAllTags(implode(',', $ids->toArray()));
+
         $deletedImage = $this->repository->delete($id);
 
-        Cache::tags(["images_$id", 'images'])->flush();
+        Cache::tags(["images_$id", 'images', ...$tags])->flush();
 
         return $deletedImage;
+    }
+
+    private function getAllTags($ids)
+    {
+        foreach ($ids as $id) {
+            $tags[] = "category_image_$id";
+        }
+
+        return $tags;
     }
 }

@@ -11,7 +11,8 @@ class StoreRequest extends Controller
     {
         $rules = [
             'image' => 'required|mimes:jpeg,jpg,png,gif|max:10000',
-            'title' => 'required|string|max:100'
+            'title' => 'required|string|max:100',
+            'categories.*' => 'integer|exists:categories,id'
         ];
 
         $this->validate($request, $rules);

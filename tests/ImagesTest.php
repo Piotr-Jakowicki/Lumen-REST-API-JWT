@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Category;
 use App\Models\Image;
 use App\Models\User;
 use App\Requests\Images\UpdateRequest;
@@ -462,6 +463,37 @@ class ImagesTest extends TestCase
         $this
             ->actingAs($user)
             ->delete("/api/images/$image->id");
+    }
+
+    /**
+     * @test
+     */
+    public function should_create_image_with_categories()
+    {
+        $user = User::factory()->create();
+        Category::factory()->count(2)->create();
+
+        Storage::fake('public');
+
+        $this
+            ->actingAs($user)
+            ->post('/api/images', [
+                'title' => 'Image',
+                'image' => UploadedFile::fake()->image('img.png'),
+                'categories[0]' => 1,
+                'categories[1]' => 2,
+            ]);
+
+        $this->assertEquals(201, $this->response->status());
+        $this->seeJsonStructure([
+            'data' => [
+                'id',
+                'user_id',
+                'title',
+                'path'
+            ]
+        ]);
+        $this->seeInDatabase('images', ['title' => 'Image']);
     }
 
     protected function createRequest(
