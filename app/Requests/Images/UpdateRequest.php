@@ -11,7 +11,8 @@ class UpdateRequest extends Controller
     {
         $rules = [
             'image' => 'sometimes|required|mimes:jpeg,jpg,png,gif|max:10000',
-            'title' => 'sometimes|required|string|max:100'
+            'title' => 'sometimes|required|string|max:100',
+            'categories.*' => 'integer|exists:categories,id'
         ];
 
         $this->validate($request, $rules);

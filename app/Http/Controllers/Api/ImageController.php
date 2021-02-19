@@ -52,9 +52,9 @@ class ImageController extends Controller
 
         // refactore in service 
 
-        if (isset($request->getParams()->categories)) {
-            $image->categories()->attach($request->getParams()->categories);
-        }
+        // if (isset($request->getParams()->categories)) {
+        //     $image->categories()->attach($request->getParams()->categories);
+        // }
 
         return new ImageResource($image);
     }

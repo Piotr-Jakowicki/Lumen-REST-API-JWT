@@ -28,21 +28,7 @@ class ImagesRepository implements ImagesRepositoryInterface
 
     public function store($attributes)
     {
-        // refactore
-
-        $url = $this->uploadImage($attributes['image']);
-
-        $image = $this->model->create([
-            'path' => url() . $url,
-            'title' => $attributes['title'],
-            'user_id' => Auth::id(),
-        ]);
-
-        // $categoryIds = $attributes['categories'];
-
-        // $image->categories()->attach(explode(',', $categoryIds));
-
-        return $image;
+        return $this->model->create($attributes);
     }
 
     public function update($id, $attributes)
@@ -53,14 +39,14 @@ class ImagesRepository implements ImagesRepositoryInterface
 
         // add it to service
 
-        if (isset($attributes['image'])) {
-            $oldPath = last(explode('/', $image->path));
-            Storage::delete("public/$oldPath");
+        // if (isset($attributes['image'])) {
+        //     $oldPath = last(explode('/', $image->path));
+        //     Storage::delete("public/$oldPath");
 
-            $url = $this->uploadImage($attributes['image']);
+        //     $url = $this->uploadImage($attributes['image']);
 
-            $attributes = array_merge($attributes, ['path' => url() . $url]);
-        }
+        //     $attributes = array_merge($attributes, ['path' => url() . $url]);
+        // }
 
         $image->update($attributes);
 

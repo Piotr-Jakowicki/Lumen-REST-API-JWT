@@ -7,7 +7,7 @@ use App\Interfaces\ImagesRepositoryInterface;
 use App\Repositories\Categories\CategoriesCacheRepository;
 use App\Repositories\CategoryImage\CategoryImageCacheRepository;
 use App\Repositories\Collections\CollectionsCacheRepository;
-use App\Repositories\Images\ImagesCacheRepository;
+use App\Services\Images\ImagesService;
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
@@ -125,7 +125,7 @@ $app->register(\Illuminate\Cache\CacheServiceProvider::class);
  * 
  */
 
-$app->bind(ImagesRepositoryInterface::class, ImagesCacheRepository::class);
+$app->bind(ImagesRepositoryInterface::class, ImagesService::class);
 $app->bind(CategoriesRepositoryInterface::class, CategoriesCacheRepository::class);
 $app->bind(CollectionsRepositoryInterface::class, CollectionsCacheRepository::class);
 $app->bind(CategoryImageRepositoryInterface::class, CategoryImageCacheRepository::class);

@@ -35,13 +35,8 @@ class ImagesCacheRepository extends AbstractCache implements ImagesRepositoryInt
 
     public function store($attributes)
     {
-        // make tags only if ctegories are set
-        // @todo add makeTags class
-        if (isset($attributes['categories'])) {
-            $tags = $this->getAllTags($attributes['categories']);
-        } else {
-            $tags = [];
-        }
+        $categories = $attributes['categories'] ?? [];
+        $tags = $this->getAllTags($categories);
 
         Cache::tags(['images', ...$tags])->flush();
 
@@ -50,10 +45,16 @@ class ImagesCacheRepository extends AbstractCache implements ImagesRepositoryInt
 
     public function update($id, $attributes)
     {
-        // todo fix
-        if (isset($attributes['categories'])) {
-            $tags = $this->getAllTags($attributes['categories']);
-        }
+        // collct new and old categories
+        // if($attributes['categories']){
+        //     $categories = $this->getCategories($attributes['categories'], $id);
+        // }
+
+        // $categories = array_merge(($attributes['categories'] ?? []), $this->getCategories($id));
+
+        // dd($categories);
+
+        $tags = $this->getAllTags($attributes['categories'] ?? []);
 
         $updatedImage = $this->repository->update($id, $attributes);
 
@@ -68,25 +69,12 @@ class ImagesCacheRepository extends AbstractCache implements ImagesRepositoryInt
 
         $ids = $image->categories()->pluck('id');
 
-        // todo fix
-        if (count($ids) > 0) {
-            $tags = $this->getAllTags($ids);
-        }
+        $tags = $this->getAllTags($ids ?? []);
 
         $deletedImage = $this->repository->delete($id);
 
-        // todo fix
-        Cache::tags(["images_$id", 'images', ...$tags ?? []])->flush();
+        Cache::tags(["images_$id", 'images', ...$tags])->flush();
 
         return $deletedImage;
-    }
-
-    private function getAllTags($ids)
-    {
-        foreach ($ids as $id) {
-            $tags[] = "category_image_$id";
-        }
-
-        return $tags;
     }
 }
