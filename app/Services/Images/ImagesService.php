@@ -5,12 +5,9 @@ namespace App\Services\Images;
 use App\Interfaces\ImagesRepositoryInterface;
 use App\Repositories\Images\ImagesCacheRepository;
 use Exception;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
-use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Throwable;
 
 class ImagesService implements ImagesRepositoryInterface
 {
@@ -80,6 +77,8 @@ class ImagesService implements ImagesRepositoryInterface
 
                 $attributes = array_merge($attributes, ['path' => url() . $url]);
             }
+
+            DB::commit();
         } catch (Exception $e) {
             if ($path) {
                 Storage::delete($path);
@@ -90,7 +89,6 @@ class ImagesService implements ImagesRepositoryInterface
             // fix
             return $e;
         }
-
         return $this->repository->update($id, $attributes);
     }
 

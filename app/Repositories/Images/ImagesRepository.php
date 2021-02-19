@@ -33,20 +33,7 @@ class ImagesRepository implements ImagesRepositoryInterface
 
     public function update($id, $attributes)
     {
-        // refactor logic to service
-
         $image = $this->find($id);
-
-        // add it to service
-
-        // if (isset($attributes['image'])) {
-        //     $oldPath = last(explode('/', $image->path));
-        //     Storage::delete("public/$oldPath");
-
-        //     $url = $this->uploadImage($attributes['image']);
-
-        //     $attributes = array_merge($attributes, ['path' => url() . $url]);
-        // }
 
         $image->update($attributes);
 
@@ -60,11 +47,5 @@ class ImagesRepository implements ImagesRepositoryInterface
         $image->delete();
 
         return $image;
-    }
-
-    protected function uploadImage($image)
-    {
-        $path = Storage::put('public', $image);
-        return Storage::url($path);
     }
 }
