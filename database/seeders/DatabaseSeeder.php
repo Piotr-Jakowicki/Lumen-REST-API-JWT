@@ -7,6 +7,7 @@ use App\Models\CategoryImage;
 use App\Models\Image;
 use App\Models\User;
 use App\Models\Collection;
+use App\Models\CollectionImage;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -28,5 +29,6 @@ class DatabaseSeeder extends Seeder
         Image::factory()->times(10)->create();
         Collection::factory()->times(10)->create();
         CategoryImage::factory()->times(30)->create();
+        CollectionImage::factory()->times(30)->create();
     }
 }
