@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\ImageCollection;
 use App\Http\Resources\ImageResource;
 use App\Interfaces\ImagesRepositoryInterface;
+use App\Models\Image;
 use App\Requests\Images\StoreRequest;
 use App\Requests\Images\UpdateRequest;
 use Illuminate\Http\Request;
@@ -25,8 +26,6 @@ class ImageController extends Controller
 
     public function index(Request $request)
     {
-        // load relations by param
-
         $images = $this->repository->get($request->all());
 
         return new ImageCollection($images);
@@ -35,6 +34,9 @@ class ImageController extends Controller
     public function show($id)
     {
         $image = $this->repository->find($id);
+
+        // @todo load relations by param
+        $image->load('categories');
 
         return new ImageResource($image);
     }
@@ -52,9 +54,11 @@ class ImageController extends Controller
 
         // refactore in service 
 
-        // if (isset($request->getParams()->categories)) {
-        //     $image->categories()->attach($request->getParams()->categories);
-        // }
+        if (isset($request->getParams()->categories)) {
+            $image->categories()->attach($request->getParams()->categories);
+
+            $image->load('categories');
+        }
 
         return new ImageResource($image);
     }

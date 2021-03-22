@@ -10,6 +10,8 @@ class ImagesCacheRepository extends AbstractCache implements ImagesRepositoryInt
 {
     protected $repository;
 
+    private $relationKeys = [];
+
     const TTL = 1800;
 
     public function __construct(ImagesRepository $repository)
@@ -35,45 +37,36 @@ class ImagesCacheRepository extends AbstractCache implements ImagesRepositoryInt
 
     public function store($attributes)
     {
-        $categories = $attributes['categories'] ?? [];
-        $tags = $this->getAllTags($categories);
+        if (isset($attributes['categories'])) {
+            foreach ($attributes['categories'] as $id) {
+                dd($id);
+                $this->relationKeys[] = "category_$id";
+            }
+        }
 
-        Cache::tags(['images', ...$tags])->flush();
+        Cache::tags(['images', ...$this->relationKeys])->flush();
 
         return $this->repository->store($attributes);
     }
 
     public function update($id, $attributes)
     {
-        // collct new and old categories
-        // if($attributes['categories']){
-        //     $categories = $this->getCategories($attributes['categories'], $id);
-        // }
+        if (isset($attributes['categories'])) {
+            foreach ($attributes['categories'] as $id) {
+                $this->relationKeys[] = "category_$id";
+            }
+        }
 
-        // $categories = array_merge(($attributes['categories'] ?? []), $this->getCategories($id));
+        Cache::tags(["images_$id", 'images', ...$this->relationKeys])->flush();
 
-        // dd($categories);
-
-        $tags = $this->getAllTags($attributes['categories'] ?? []);
-
-        $updatedImage = $this->repository->update($id, $attributes);
-
-        Cache::tags(["images_$id", 'images', ...$tags ?? []])->flush();
-
-        return $updatedImage;
+        return $this->repository->update($id, $attributes);;
     }
 
     public function delete($id)
     {
-        $image = $this->repository->find($id);
-
-        $ids = $image->categories()->pluck('id');
-
-        $tags = $this->getAllTags($ids ?? []);
-
         $deletedImage = $this->repository->delete($id);
 
-        Cache::tags(["images_$id", 'images', ...$tags])->flush();
+        Cache::tags(["images_$id", 'images'])->flush();
 
         return $deletedImage;
     }

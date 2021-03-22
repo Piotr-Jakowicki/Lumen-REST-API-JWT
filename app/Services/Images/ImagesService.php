@@ -49,7 +49,7 @@ class ImagesService implements ImagesRepositoryInterface
             DB::commit();
         } catch (Exception $e) {
             if ($path) {
-                Storage::delete($path);
+                Storage::delete("public/$path");
             }
 
             DB::rollBack();
@@ -81,7 +81,7 @@ class ImagesService implements ImagesRepositoryInterface
             DB::commit();
         } catch (Exception $e) {
             if ($path) {
-                Storage::delete($path);
+                Storage::delete("public/$path");
             }
 
             DB::rollBack();

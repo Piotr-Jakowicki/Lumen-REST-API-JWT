@@ -12,7 +12,8 @@ class ImageResource extends JsonResource
             'id' => $this->id,
             'user_id' => (int)$this->user_id,
             'title' => $this->title,
-            'path' => $this->path
+            'path' => $this->path,
+            'categories' => CategoryResource::collection($this->whenLoaded('categories'))
         ];
     }
 }

@@ -114,12 +114,15 @@ class ImagesTest extends TestCase
     /**
      * @test
      */
-    public function should_return_specified_category()
+    public function should_return_image_categories()
     {
         // Image factory require at least 1 user
         User::factory()->create();
+        $categories = Category::factory()->count(3)->create();
 
         $image = Image::factory()->create();
+        $image->categories()->attach([1, 2, 3]);
+        $image->load('categories');
 
         $this->get("/api/images/$image->id");
 
@@ -129,7 +132,8 @@ class ImagesTest extends TestCase
                 'id',
                 'user_id',
                 'title',
-                'path'
+                'path',
+                'categories'
             ]
         ]);
         $this->seeJson([
@@ -137,7 +141,24 @@ class ImagesTest extends TestCase
                 'id' => $image->id,
                 'user_id' => $image->user_id,
                 'title' => $image->title,
-                'path' => $image->path
+                'path' => $image->path,
+                'categories' => [
+                    [
+                        'id' => 1,
+                        'name' => $categories[0]->name,
+                        'parent_id' => $categories[0]->parent_id
+                    ],
+                    [
+                        'id' => 2,
+                        'name' => $categories[1]->name,
+                        'parent_id' => $categories[1]->parent_id
+                    ],
+                    [
+                        'id' => 3,
+                        'name' => $categories[2]->name,
+                        'parent_id' => $categories[2]->parent_id
+                    ],
+                ]
             ]
         ]);
     }
@@ -320,6 +341,44 @@ class ImagesTest extends TestCase
         $this->seeJsonStructure([
             'error'
         ]);
+    }
+
+    /**
+     * @test
+     */
+    public function should_store_image_with_categories()
+    {
+        $user = User::factory()->create();
+        Category::factory()->count(3)->create();
+
+        Storage::fake('public');
+
+        $this
+            ->actingAs($user)
+            ->post('/api/images', [
+                'title' => 'Image',
+                'image' => UploadedFile::fake()->image('img.png'),
+                'categories' => [1, 2, 3]
+            ]);
+
+        $this->assertEquals(201, $this->response->status());
+        $this->seeJsonStructure([
+            'data' => [
+                'id',
+                'user_id',
+                'title',
+                'path',
+                'categories' => [
+                    '*' => [
+                        'id',
+                        'parent_id',
+                        'name'
+                    ]
+                ]
+            ]
+        ]);
+        $this->seeInDatabase('images', ['title' => 'Image']);
+        $this->seeInDatabase('category_image', ['image_id' => '1']);
     }
 
     /**

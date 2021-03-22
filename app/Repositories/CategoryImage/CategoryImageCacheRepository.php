@@ -22,7 +22,7 @@ class CategoryImageCacheRepository extends AbstractCache implements CategoryImag
     {
         $key = "category_image_$id" . "_" . $this->prepareCacheKey($params);
 
-        return Cache::tags("category_image_$id")->remember($key, self::TTL, function () use ($params, $id) {
+        return Cache::tags("category_$id")->remember($key, self::TTL, function () use ($params, $id) {
             return $this->repository->get($params, $id);
         });
     }
